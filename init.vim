@@ -1,4 +1,4 @@
-call plug#begin('~/.local/share/nvim/plugged')
+call plug#begin('/root/.local/share/nvim/plugged')
 Plug 'ncm2/ncm2'
 Plug 'roxma/nvim-yarp'
 Plug 'ncm2/ncm2-bufword'
@@ -9,22 +9,38 @@ Plug 'sirver/UltiSnips'
 Plug 'SirVer/UltiSnips'
 Plug 'ncm2/ncm2-ultisnips'
 Plug 'lervag/vimtex'
+Plug 'chrisbra/csv.vim'
 call plug#end()
 
+"" CONFIGURATIONS FOR AUTOCOMPLETION
 " enable ncm2 for all buffers
 autocmd BufEnter * call ncm2#enable_for_buffer()
 " IMPORTANT: :help Ncm2PopupOpen for more information
 set completeopt=noinsert,menuone,noselect
-" NOTE: you need to install completion sources to get completions. Check
-" our wiki page for a list of sources: https://github.com/ncm2/ncm2/wiki
-
-" Trigger configuration. Do not use <tab> if you use https://github.com/Valloric/YouCompleteMe.
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
-
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
+" UltiSnips + NCM
+let g:UltiSnipsExpandTrigger = "<Plug>(ultisnips_expand_or_jump)"
+let g:UltiSnipsJumpForwardTrigger = "<Plug>(ultisnips_expand_or_jump)"
+let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+function! UltiSnipsExpandOrJumpOrTab()
+  call UltiSnips#ExpandSnippetOrJump()
+  if g:ulti_expand_or_jump_res > 0
+    return ""
+  else
+    return "\<Tab>"
+  endif
+endfunction
+inoremap <silent> <expr> <Tab>
+      \ ncm2_ultisnips#expand_or("\<Plug>(ultisnips_try_expand)")
+inoremap <silent> <Plug>(ultisnips_try_expand)
+      \ <C-R>=UltiSnipsExpandOrJumpOrTab()<CR>
+snoremap <silent> <Tab>
+      \ <Esc>:call UltiSnips#ExpandSnippetOrJump()<cr>
 
-autocmd BufEnter * call ncm2#enable_for_buffer()
-set completeopt=noinsert,menuone,noselect
+""PERSONALIZATIONS FOR R
+let R_assign = 2
+set shiftwidth=2
+set tabstop=2
+set listchars=space:_,tab:>~ list
+set et     "expand tabs to spaces
