@@ -12,7 +12,13 @@ RUN curl -fLo .local/share/nvim/site/autoload/plug.vim --create-dirs \
 RUN mkdir -p .config/nvim
 # NVim-R configuration for Rstudio
 COPY init.vim .config/nvim/init.vim
-RUN squashfs-root/AppRun +PlugInstall +qall
+RUN wget https://github.com/neovim/neovim/releases/download/v0.3.8/nvim.appimage \
+  && chmod u+x nvim.appimage \
+  && ./nvim.appimage --appimage-extract \
+  && curl -fLo .local/share/nvim/site/autoload/plug.vim --create-dirs \
+  https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim \
+  && mkdir -p .config/nvim \
+  && squashfs-root/AppRun +PlugInstall +qall
 USER root
 RUN ln -s /home/rstudio/squashfs-root/AppRun /usr/local/bin/nvim
 
